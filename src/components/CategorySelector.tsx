@@ -53,7 +53,7 @@ export function CategorySelector({
   return (
     <div className="relative">
       {/* Section Tabs */}
-      <div className="flex justify-center gap-4 py-6">
+      <div className="flex justify-center gap-6 py-8">
         {sections.map(section => {
           const { completed, total } = getSectionProgress(section)
           const isActive = section === currentSection
@@ -68,20 +68,25 @@ export function CategorySelector({
                 const firstInSection = sectionCategories[section]?.[0]
                 if (firstInSection) onCategorySelect(firstInSection.idx)
               }}
+              style={isActive ? {
+                background: 'linear-gradient(135deg, #011832 0%, #132C49 50%, #1a3a5c 100%)'
+              } : allDone ? {} : {
+                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
+              }}
               className={`
-                px-6 py-3 rounded-xl text-sm font-semibold transition-all
+                px-8 py-4 rounded-2xl text-base font-bold transition-all shadow-md
                 ${isActive 
-                  ? 'bg-deep-navy text-white shadow-lg' 
+                  ? 'text-white shadow-xl scale-105 border-2 border-blue-300/30' 
                   : allDone
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200 hover:scale-102'
+                    : 'text-gray-700 hover:shadow-lg hover:scale-102 border border-gray-200'
                 }
               `}
             >
               {section}
-              {allDone && <span className="ml-1">✓</span>}
+              {allDone && <span className="ml-2">✓</span>}
               {!allDone && total > 0 && (
-                <span className="ml-1 text-xs opacity-70">({completed}/{total})</span>
+                <span className="ml-2 text-sm opacity-70">({completed}/{total})</span>
               )}
             </button>
           )
