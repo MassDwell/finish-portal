@@ -9,6 +9,16 @@ import {
   lockProjectSelections
 } from '@/lib/supabase'
 import type { Project, FinishCategory, FinishOption, ProjectSelection } from '@/lib/supabase'
+
+// Format category name nicely
+function formatCategoryName(name: string): string {
+  return name
+    .replace(/_/g, ' ')
+    .replace(/interior |exterior |adu /gi, '')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
+}
 import { ProgressBar } from './ProgressBar'
 import { CategorySelector } from './CategorySelector'
 import { OptionGrid } from './OptionGrid'
@@ -235,11 +245,11 @@ export function CustomerSelection({ project }: CustomerSelectionProps) {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-deep-navy mb-2">
-              {currentCategory.display_name}
+            <h2 className="text-2xl font-bold text-deep-navy mb-2 uppercase tracking-wide">
+              {currentCategory.display_name || formatCategoryName(currentCategory.name)}
             </h2>
             {currentCategory.description && (
-              <p className="text-soft-denim">
+              <p className="text-soft-denim max-w-2xl mx-auto">
                 {currentCategory.description}
               </p>
             )}
