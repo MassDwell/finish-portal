@@ -14,9 +14,9 @@ export function ProjectList({ projects, onProjectSelect, onRefresh }: ProjectLis
   const [statusFilter, setStatusFilter] = useState<string>('all')
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.project_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.adu_model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (project.customer_email && project.customer_email.toLowerCase().includes(searchTerm.toLowerCase()))
+    const matchesSearch = (project.project_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (project.adu_model?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (project.customer_email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     
     const matchesStatus = statusFilter === 'all' || project.status === statusFilter
     
