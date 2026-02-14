@@ -5,6 +5,7 @@ import { getProjectSelections, getFinishOptionsByCategory } from '@/lib/supabase
 import type { Project, ProjectSelection, FinishCategory, FinishOption } from '@/lib/supabase'
 import { LoadingSpinner } from './LoadingSpinner'
 import { generateProjectPDF } from '@/lib/pdf-generator'
+import { getLocalImageUrl } from '@/lib/imageUtils'
 
 interface ProjectDetailsProps {
   project: Project
@@ -215,7 +216,7 @@ export function ProjectDetails({ project, categories, onBack }: ProjectDetailsPr
                             {option.image_url && (
                               <div className="flex-shrink-0">
                                 <img 
-                                  src={option.image_url} 
+                                  src={getLocalImageUrl(option.image_url)} 
                                   alt={option.name}
                                   className="w-20 h-20 object-cover rounded-lg"
                                 />

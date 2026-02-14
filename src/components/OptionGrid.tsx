@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import type { FinishOption } from '@/lib/supabase'
+import { getLocalImageUrl } from '@/lib/imageUtils'
 
 interface OptionGridProps {
   options: FinishOption[]
@@ -18,6 +19,7 @@ interface OptionCardProps {
 
 function OptionCard({ option, isSelected, onSelect }: OptionCardProps) {
   const [imageError, setImageError] = useState(false)
+  const imageUrl = getLocalImageUrl(option.image_url)
 
   return (
     <div
@@ -31,9 +33,9 @@ function OptionCard({ option, isSelected, onSelect }: OptionCardProps) {
       `}
     >
       <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100 mb-4">
-        {option.image_url && !imageError ? (
+        {imageUrl && !imageError ? (
           <Image
-            src={option.image_url}
+            src={imageUrl}
             alt={option.name}
             fill
             className="object-cover"
