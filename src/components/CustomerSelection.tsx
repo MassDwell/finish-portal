@@ -208,36 +208,40 @@ export function CustomerSelection({ project }: CustomerSelectionProps) {
   const progress = (completedCategories / categories.length) * 100
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Project Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-deep-navy mb-2">{project.project_name}</h1>
-            <p className="text-lg text-soft-denim mb-4">ADU Model: {project.adu_model}</p>
-            
-            <ProgressBar 
-              current={completedCategories} 
-              total={categories.length}
-              percentage={progress}
-            />
-            
-            <p className="text-sm text-soft-denim mt-2">
-              {completedCategories} of {categories.length} categories complete
-            </p>
+    <div className="min-h-screen bg-gray-200">
+      {/* Compact Header */}
+      <div className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold text-deep-navy">{project.project_name}</h1>
+              <p className="text-sm text-soft-denim">ADU Model: {project.adu_model}</p>
+            </div>
+            <div className="text-right">
+              <div className="text-sm font-medium text-deep-navy">{completedCategories} of {categories.length}</div>
+              <div className="text-xs text-soft-denim">selections complete</div>
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-deep-navy rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Category Navigation */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4">
-          <CategorySelector
-            categories={categories}
-            currentIndex={currentCategoryIndex}
-            selections={selections}
-            onCategorySelect={navigateToCategory}
-          />
+        
+        {/* Category Navigation */}
+        <div className="border-t border-gray-100">
+          <div className="container mx-auto px-4">
+            <CategorySelector
+              categories={categories}
+              currentIndex={currentCategoryIndex}
+              selections={selections}
+              onCategorySelect={navigateToCategory}
+            />
+          </div>
         </div>
       </div>
 

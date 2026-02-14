@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import type { FinishCategory, ProjectSelection } from '@/lib/supabase'
 
 interface CategorySelectorProps {
@@ -7,25 +10,12 @@ interface CategorySelectorProps {
   onCategorySelect: (index: number) => void
 }
 
-// Format category name nicely
-function formatCategoryName(name: string, displayName?: string | null): string {
-  if (displayName) return displayName
-  
-  // Convert snake_case to Title Case and clean up
-  return name
-    .replace(/_/g, ' ')
-    .replace(/interior |exterior /gi, '')
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ')
-}
-
-// Group categories by section
-function getCategorySection(name: string): string {
-  if (name.includes('adu')) return 'ADU Selection'
+// Get section for a category
+function getSection(name: string): string {
+  if (name.includes('adu')) return 'ADU Model'
   if (name.includes('exterior')) return 'Exterior'
-  if (name.includes('kitchen') || name.includes('cabinet')) return 'Kitchen'
-  if (name.includes('bathroom') || name.includes('shower') || name.includes('vanity') || name.includes('toilet')) return 'Bathroom'
+  if (name.includes('kitchen') || name.includes('cabinet') || name.includes('quartz')) return 'Kitchen'
+  if (name.includes('bathroom') || name.includes('shower') || name.includes('vanity') || name.includes('toilet') || name.includes('ada')) return 'Bathroom'
   return 'Interior'
 }
 
@@ -35,96 +25,132 @@ export function CategorySelector({
   selections, 
   onCategorySelect 
 }: CategorySelectorProps) {
+  const [showDropdown, setShowDropdown] = useState(false)
+
+  const currentCategory = categories[currentIndex]
+  const currentSection = currentCategory ? getSection(currentCategory.name) : ''
+  
+  // Group by section for dropdown
+  const sections = ['ADU Model', 'Exterior', 'Interior', 'Kitchen', 'Bathroom']
+  const sectionCategories: { [key: string]: { cat: FinishCategory; idx: number }[] } = {}
+  categories.forEach((cat, idx) => {
+    const section = getSection(cat.name)
+    if (!sectionCategories[section]) sectionCategories[section] = []
+    sectionCategories[section].push({ cat, idx })
+  })
+
   function isCompleted(categoryId: string): boolean {
     return selections.some(s => s.category_id === categoryId)
   }
 
-  // Group categories by section
-  const sections: { [key: string]: { category: FinishCategory; index: number }[] } = {}
-  categories.forEach((category, index) => {
-    const section = getCategorySection(category.name)
-    if (!sections[section]) sections[section] = []
-    sections[section].push({ category, index })
-  })
-
-  const sectionOrder = ['ADU Selection', 'Exterior', 'Interior', 'Kitchen', 'Bathroom']
+  // Count completed per section
+  function getSectionProgress(section: string): { completed: number; total: number } {
+    const cats = sectionCategories[section] || []
+    const completed = cats.filter(({ cat }) => isCompleted(cat.id)).length
+    return { completed, total: cats.length }
+  }
 
   return (
-    <div className="border-b border-gray-200 bg-gray-50 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-      {/* Progress indicator */}
-      <div className="flex items-center justify-between py-3 border-b border-gray-200">
-        <span className="text-sm text-gray-500">
-          Step {currentIndex + 1} of {categories.length}
-        </span>
-        <span className="text-sm text-gray-500">
-          {selections.length} of {categories.length} complete
-        </span>
-      </div>
-      
-      {/* Section tabs */}
-      <div className="flex overflow-x-auto py-2 gap-1 scrollbar-hide">
-        {sectionOrder.map(sectionName => {
-          const sectionCategories = sections[sectionName] || []
-          if (sectionCategories.length === 0) return null
+    <div className="relative">
+      {/* Section Tabs */}
+      <div className="flex justify-center gap-2 py-4">
+        {sections.map(section => {
+          const { completed, total } = getSectionProgress(section)
+          const isActive = section === currentSection
+          const allDone = completed === total && total > 0
           
-          const isCurrentSection = sectionCategories.some(({ index }) => index === currentIndex)
-          const allCompleted = sectionCategories.every(({ category }) => isCompleted(category.id))
-          const someCompleted = sectionCategories.some(({ category }) => isCompleted(category.id))
-          
-          return (
-            <div key={sectionName} className="flex-shrink-0">
-              <div className={`
-                px-3 py-1 rounded-t-lg text-xs font-semibold uppercase tracking-wide
-                ${isCurrentSection 
-                  ? 'bg-deep-navy text-white' 
-                  : allCompleted
-                    ? 'bg-green-100 text-green-700'
-                    : someCompleted
-                      ? 'bg-blue-50 text-admiral-blue'
-                      : 'bg-gray-100 text-gray-500'
-                }
-              `}>
-                {sectionName}
-                {allCompleted && ' ✓'}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-      
-      {/* Category pills for current section */}
-      <div className="flex flex-wrap gap-2 py-3">
-        {categories.map((category, index) => {
-          const isActive = index === currentIndex
-          const completed = isCompleted(category.id)
+          if (total === 0) return null
           
           return (
             <button
-              key={category.id}
-              onClick={() => onCategorySelect(index)}
+              key={section}
+              onClick={() => {
+                const firstInSection = sectionCategories[section]?.[0]
+                if (firstInSection) onCategorySelect(firstInSection.idx)
+              }}
               className={`
-                inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium
-                transition-all duration-200 border
+                px-4 py-2 rounded-lg text-sm font-semibold transition-all
                 ${isActive 
-                  ? 'bg-deep-navy text-white border-deep-navy shadow-md scale-105' 
-                  : completed
-                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                  ? 'bg-deep-navy text-white shadow-lg' 
+                  : allDone
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                 }
               `}
             >
-              {completed && !isActive && (
-                <svg className="w-3.5 h-3.5 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+              {section}
+              {allDone && <span className="ml-1">✓</span>}
+              {!allDone && total > 0 && (
+                <span className="ml-1 text-xs opacity-70">({completed}/{total})</span>
               )}
-              <span className="truncate max-w-[150px]">
-                {formatCategoryName(category.name, category.display_name)}
-              </span>
             </button>
           )
         })}
       </div>
+
+      {/* Current Category Dropdown */}
+      <div className="flex justify-center pb-4">
+        <div className="relative">
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+          >
+            <span className="text-gray-500">Jump to:</span>
+            <span className="font-medium text-deep-navy">
+              {currentCategory?.display_name || formatName(currentCategory?.name || '')}
+            </span>
+            <svg className={`w-4 h-4 transition-transform ${showDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {showDropdown && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto min-w-[300px]">
+              {sections.map(section => {
+                const cats = sectionCategories[section] || []
+                if (cats.length === 0) return null
+                
+                return (
+                  <div key={section}>
+                    <div className="px-3 py-2 bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wide sticky top-0">
+                      {section}
+                    </div>
+                    {cats.map(({ cat, idx }) => {
+                      const done = isCompleted(cat.id)
+                      const active = idx === currentIndex
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => {
+                            onCategorySelect(idx)
+                            setShowDropdown(false)
+                          }}
+                          className={`
+                            w-full text-left px-4 py-2 text-sm flex items-center justify-between
+                            ${active ? 'bg-blue-50 text-deep-navy font-medium' : 'hover:bg-gray-50'}
+                          `}
+                        >
+                          <span>{cat.display_name || formatName(cat.name)}</span>
+                          {done && <span className="text-green-500">✓</span>}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
+}
+
+function formatName(name: string): string {
+  return name
+    .replace(/_/g, ' ')
+    .replace(/interior |exterior |adu /gi, '')
+    .split(' ')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ')
 }
