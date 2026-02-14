@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import type { FinishOption } from '@/lib/supabase'
 import { getLocalImageUrl } from '@/lib/imageUtils'
 
@@ -34,13 +33,11 @@ function OptionCard({ option, isSelected, onSelect }: OptionCardProps) {
     >
       <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100 mb-4">
         {imageUrl && !imageError ? (
-          <Image
+          <img
             src={imageUrl}
             alt={option.name}
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
             onError={() => setImageError(true)}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-200">
