@@ -36,7 +36,7 @@ function OptionCard({ option, isSelected, onSelect }: OptionCardProps) {
           <img
             src={imageUrl}
             alt={option.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain bg-gray-50"
             onError={() => setImageError(true)}
           />
         ) : (

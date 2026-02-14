@@ -218,7 +218,7 @@ export function ProjectDetails({ project, categories, onBack }: ProjectDetailsPr
                                 <img 
                                   src={getLocalImageUrl(option.image_url)} 
                                   alt={option.name}
-                                  className="w-20 h-20 object-cover rounded-lg"
+                                  className="w-20 h-20 object-contain bg-gray-50 rounded-lg"
                                 />
                               </div>
                             )}
