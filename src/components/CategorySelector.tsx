@@ -53,7 +53,7 @@ export function CategorySelector({
   return (
     <div className="relative">
       {/* Section Tabs */}
-      <div className="flex justify-center gap-2 py-4">
+      <div className="flex justify-center gap-4 py-6">
         {sections.map(section => {
           const { completed, total } = getSectionProgress(section)
           const isActive = section === currentSection
@@ -69,7 +69,7 @@ export function CategorySelector({
                 if (firstInSection) onCategorySelect(firstInSection.idx)
               }}
               className={`
-                px-4 py-2 rounded-lg text-sm font-semibold transition-all
+                px-6 py-3 rounded-xl text-sm font-semibold transition-all
                 ${isActive 
                   ? 'bg-deep-navy text-white shadow-lg' 
                   : allDone
@@ -89,7 +89,7 @@ export function CategorySelector({
       </div>
 
       {/* Current Category Dropdown */}
-      <div className="flex justify-center pb-4">
+      <div className="flex justify-center pb-6">
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
