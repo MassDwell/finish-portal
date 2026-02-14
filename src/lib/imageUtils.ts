@@ -34,4 +34,4 @@ export function getLocalImageUrl(driveUrl: string | undefined): string | undefin
   // If not a Drive URL, return as-is (might be already local)
   return driveUrl
 }
-// Redeploy 1771095596
+// Fixed image loading - prod deploy 1771097758
