@@ -1,10 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --deep-navy: #011832;
-  --admiral-blue: #132C49;
-  --soft-denim: #445970;
+  --massdwell-green: #22c55e;
+  --massdwell-dark: #0d0d0d;
+  --massdwell-card: #1a1a1a;
+  --massdwell-text: #ffffff;
+  --massdwell-secondary: #a0a0a0;
   --white: #FFFFFF;
+  
+  /* Legacy support - gradually migrate away */
+  --deep-navy: var(--massdwell-dark);
+  --admiral-blue: var(--massdwell-green);
+  --soft-denim: var(--massdwell-secondary);
 }
 
 * {
@@ -18,11 +25,23 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f3f4f6;
-  color: var(--deep-navy);
+  background-color: var(--massdwell-dark);
+  color: var(--massdwell-text);
 }
 
-/* Brand color utilities */
+/* MassDwell brand color utilities */
+.bg-massdwell-green { background-color: var(--massdwell-green); }
+.bg-massdwell-dark { background-color: var(--massdwell-dark); }
+.bg-massdwell-card { background-color: var(--massdwell-card); }
+.text-massdwell-green { color: var(--massdwell-green); }
+.text-massdwell-dark { color: var(--massdwell-dark); }
+.text-massdwell-text { color: var(--massdwell-text); }
+.text-massdwell-secondary { color: var(--massdwell-secondary); }
+.border-massdwell-green { border-color: var(--massdwell-green); }
+.border-massdwell-dark { border-color: var(--massdwell-dark); }
+.ring-massdwell-green { --tw-ring-color: var(--massdwell-green); }
+
+/* Legacy brand color utilities - maintain compatibility */
 .bg-deep-navy { background-color: var(--deep-navy); }
 .bg-admiral-blue { background-color: var(--admiral-blue); }
 .bg-soft-denim { background-color: var(--soft-denim); }
@@ -49,7 +68,7 @@ body {
 
 /* Enhanced button styles */
 .btn-primary {
-  background-color: var(--deep-navy);
+  background-color: var(--massdwell-green);
   color: var(--white);
   padding: 0.875rem 2rem;
   border-radius: 0.75rem;
@@ -62,7 +81,7 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: var(--admiral-blue);
+  background-color: #16a34a;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
